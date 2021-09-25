@@ -1,0 +1,40 @@
+name: Build and deploy
+
+on:
+  release:
+    types:
+      - created      
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      
+      - name: Build and release image for AMD/ARM
+        uses: sylvanld/actions/release-docker@main
+        with:
+          image: webplayer
+          context: .
+          org: ${{secrets.DOCKERHUB_USERNAME}}
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Deploy whole application using Kubernetes
+        uses: sylvanld/actions/kube-deploy@main
+        with:
+          kube_config: ${{secrets.KUBERNETES_CONFIG}}
