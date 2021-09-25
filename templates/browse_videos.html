@@ -1,0 +1,15 @@
+{% extends '_layout.html' %}
+
+{% block content %}
+<h2>Vidéos</h2>
+{% for video in videos %}
+    <a href="{{url_for('play_video', filename=video.filename)}}">{{video.title}}</a>
+{% endfor %}
+
+{% if videos | length == 0 %}
+<p>
+    Aucune vidéo à afficher pour l'instant... Repasse plus tard!
+</p>
+{% endif %}
+
+{% endblock content %}

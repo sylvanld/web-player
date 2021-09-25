@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <style>
+        body{
+            margin: 2em 8em;
+        }
+        @media screen and (max-width: 800px){
+            body{
+                margin: 2em 1em;
+            }
+        }
+    </style>
+    {% block head %}{% endblock head%}
+</head>
+<body>
+    {% block content %}{% endblock content %}
+</body>
+</html>
