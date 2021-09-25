@@ -6,8 +6,8 @@
 
 When starting the container, you must provide the following environment variables
 * **USERNAME**: Name used to authenticate
-* **PASSWORD_HASH**: Hash of the password used to authenticate ([how do I get my password's hash ?](#hash_password))
-* **VIDEO_SERVER_URL**: Path to the folder where [videos manifest](#videos_manifest) is stored
+* **PASSWORD_HASH**: Hash of the password used to authenticate ([how do I get my password's hash ?](#hash-password))
+* **VIDEO_SERVER_URL**: Path to the folder where [videos manifest](#videos-manifest) is stored
 
 ### Hash password
 
