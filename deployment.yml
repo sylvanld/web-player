@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webplayer
+  labels:
+    app: webplayer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webplayer
+  template:
+    metadata:
+      labels:
+        app: webplayer
+    spec:
+      containers:
+        - name: webplayer
+          image: sylvanld/webplayer:${DEPLOYED_VERSION}
+          ports:
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webplayer
+spec:
+  selector:
+    app: webplayer
+  ports:
+    - protocol: TCP
+      port: 80
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: webplayer
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+    - host: videos.sylvan.ovh
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: webplayer
+              servicePort: 80
