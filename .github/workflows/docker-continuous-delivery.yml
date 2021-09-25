@@ -1,0 +1,52 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Docker Continuous Delivery
+
+on:
+  release: # only run when a new release is created
+    types:
+      - created
+
+env:
+  DOCKER_REGISTRY_URL: docker.io
+  DOCKER_ORG_NAME: sylvanld
+  RELEASE_TAG: ${GITHUB_REF/refs\/tags\//}
+
+# Jobs triggered on workflow run.
+jobs:
+  build-and-release-docker:
+    runs-on: ubuntu-latest
+    
+    # this job will be played against each tuple of this matrix
+    strategy:
+      matrix:
+        include:
+          - image-name: webplayer
+            build-context: .
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Login to docker registry      
+        run: echo -n "${{secrets.DOCKER_PASSWORD}}" | docker login --username "${{secrets.DOCKER_USERNAME}}" --password-stdin ${{env.DOCKER_REGISTRY_URL}}
+      
+      # Install QEMU to emulate different architecture (required to use buildx for ARM)
+      - name: Set up QEMU
+        if: success()
+        uses: docker/setup-qemu-action@v1
+
+      # Install docker buildx to build image for multiple architectures
+      - name: Docker Setup Buildx
+        if: success()
+        uses: docker/setup-buildx-action@v1.3.0
+        with:
+          # Buildx version. (eg. v0.3.0)
+          version: v0.3.0
+          
+      # build and publish image for multiple architectures
+      - name: Build and publish
+        if: success()
+        run: docker buildx build --platform linux/amd64,linux/arm64 --output type=image,push=true -t ${{env.DOCKER_REGISTRY_URL}}/${{env.DOCKER_ORG_NAME}}/${{ matrix.image-name }}:${{ env.RELEASE_TAG }} -t ${{env.DOCKER_REGISTRY_URL}}/${{env.DOCKER_ORG_NAME}}/${{ matrix.image-name }}:latest ${{matrix.build-context}}
+        
+       
