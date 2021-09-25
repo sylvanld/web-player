@@ -23,7 +23,8 @@ print(password_hash)
 
 ### Videos manifest
 
-It is a simple JSON file that map a name to a file. E.G:
+It is a simple JSON file that map a name to a file.
+
 This file must be included along with the videos at the root of your FTP server.
 
 ```json
