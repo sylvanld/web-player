@@ -29,11 +29,11 @@ spec:
                 secretKeyRef:
                   name: videos
                   key: PASSWORD_HASH
-            - name: VIDEO_SERVER_URL
+            - name: VIDEOS_SERVER_URL
               valueFrom:
                 secretKeyRef:
                   name: videos
-                  key: VIDEO_SERVER_URL
+                  key: VIDEOS_SERVER_URL
           ports:
             - containerPort: 80
 
