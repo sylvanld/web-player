@@ -1,14 +1,44 @@
 {% extends '_layout.html' %}
 
-{% block content %}
-<h2>Vidéos</h2>
-<ul>
-{% for video in videos %}
-    <li><a href="{{url_for('play_video', filename=video.filename)}}">{{video.title}}</a></li>
-{% endfor %}
-</ul>
+{% block head %}
+<style>
+    a {
+        text-decoration: none;
+        padding: 1em 2em;
+    }
+</style>
+{% endblock head %}
 
-{% if videos | length == 0 %}
+{% block menu %}
+<!-- Always shows a header, even in smaller screens. -->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span class="mdl-layout-title">Vidéos</span>
+        </div>
+    </header>
+</div>
+{% endblock menu %}
+
+{% block content %}
+<div class="mdl-grid">
+    {% for category in categories %}
+    <div class="mdl-card mdl-shadow--2dp" style="margin: 0.5em">
+        <div class="mdl-card__title"
+            style="height: 200px; background-repeat: no-repeat; background-image: url('{{url_for_thumbnail(category.path)}}')">
+        </div>
+        <div class="mdl-card__supporting-text">
+            {% for video in category.videos %}
+            <a
+                href="{{url_for('play_video', category_path=category.path, filename=video.filename)}}">{{video.title}}</a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if categories | length == 0 %}
 <p>
     Aucune vidéo à afficher pour l'instant... Repasse plus tard!
 </p>

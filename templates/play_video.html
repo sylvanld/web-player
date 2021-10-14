@@ -8,14 +8,26 @@ function onFailure(evt){
 </script>
 {% endblock head %}
 
+{% block menu %}
+<!-- Always shows a header, even in smaller screens. -->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+            <!-- Title -->
+            <span class="mdl-layout-title">Vidéos {% if video %}/ {{video.category_title}} / {{video.title}}{% endif %}</span>
+            <!-- Add spacer, to align navigation to the right -->
+            <div class="mdl-layout-spacer"></div>
+            <!-- Navigation. -->
+            <nav class="mdl-navigation mdl-layout--large-screen-only">
+                <a class="mdl-navigation__link" href="{{url_for('browse_videos')}}">Retour à la liste des vidéos</a>
+            </nav>
+        </div>
+    </header>
+</div>
+{% endblock menu %}
+
 {% block content %}
 {% if video %}
-<header>
-    <h2>{{video.title}}</h2>
-    <a href="{{url_for('browse_videos')}}">Retour à la liste des vidéos</a>
-    <br><br>
-</header>
-
 <video 
     style="max-width: 100%"
     src="{{video.absolute_url}}" 
@@ -35,4 +47,6 @@ function onFailure(evt){
     Vérifie l'URL ou réessaye plus tard...
 </p>
 {% endif %}
+<br><br>
+<a href="{{url_for('browse_videos')}}">Retour à la liste des vidéos</a>
 {% endblock content %}

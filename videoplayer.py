@@ -48,22 +48,40 @@ def basicauth(func):
     return wrapper
 
 
-def get_videos():
+def get_manifest():
     try:
         response = requests.get(VIDEOS_SERVER_URL + "/manifest.json")
-        return response.json()["videos"]
+        return response.json()
     except (requests.exceptions.ConnectionError, JSONDecodeError):
-        return []
+        return {}
 
 
-def get_video(filename):
-    videos = get_videos()
+def get_categories():
+    return get_manifest().get("categories", [])
+
+
+def get_category(category_path: str):
+    for category in get_categories():
+        if category["path"] == category_path:
+            return category
+    return None
+
+
+def get_video(category_path: str, filename: str):
+    category = get_category(category_path)
+    videos = category["videos"]
+    
     try:
         video = next(video for video in videos if video["filename"] == filename)
-        video["absolute_url"] = VIDEOS_SERVER_URL + "/" + filename
+        video["absolute_url"] = VIDEOS_SERVER_URL + "/" + category_path + "/" + filename
+        video["category_title"] = category["title"]
         return video
     except StopIteration:
         return None
+
+
+def url_for_thumbnail(category_path: str):
+    return VIDEOS_SERVER_URL + "/" + category_path + "/thumbnail.png"
 
 
 app = Flask(__name__, static_folder="videos", static_url_path="/files/videos")
@@ -78,11 +96,11 @@ def dashboard():
 @app.route("/videos")
 @basicauth
 def browse_videos():
-    videos = get_videos()
-    return render_template("browse_videos.html", videos=videos)
+    categories = get_categories()
+    return render_template("browse_videos.html", categories=categories, url_for_thumbnail=url_for_thumbnail)
 
 
-@app.route("/videos/<string:filename>")
+@app.route("/videos/<string:category_path>/<string:filename>")
 @basicauth
-def play_video(filename: str):
-    return render_template("play_video.html", video=get_video(filename))
+def play_video(category_path: str, filename: str):
+    return render_template("play_video.html", video=get_video(category_path, filename))
